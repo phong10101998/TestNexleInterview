@@ -1,4 +1,4 @@
-const data = {
+export const data = {
     "categories": [
       {
         "_id": "627a71c1dfcfa579ffcc5260",
