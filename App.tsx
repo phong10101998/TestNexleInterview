@@ -13,26 +13,30 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {SignUpScreen} from './src/Screen/SignUpScreen';
 import {ChooseCategoriesScreen} from './src/Screen/ChooseCategoriesScreen';
 import {Provider} from 'react-redux';
+import {PersistGate} from 'redux-persist/lib/integration/react';
+import {store, persistor} from './src/store';
 
 const Stack = createNativeStackNavigator();
 
 const App: () => ReactNode = () => {
   return (
-    <SafeAreaView style={{flex: 1}}>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="signUp"
-          screenOptions={{
-            headerShown: false,
-          }}>
-          <Stack.Screen name={'signUp'} component={SignUpScreen} />
-          <Stack.Screen
-            name={'chooseCategory'}
-            component={ChooseCategoriesScreen}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </SafeAreaView>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName="signUp"
+            screenOptions={{
+              headerShown: false,
+            }}>
+            <Stack.Screen name={'signUp'} component={SignUpScreen} />
+            <Stack.Screen
+              name={'chooseCategory'}
+              component={ChooseCategoriesScreen}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </PersistGate>
+    </Provider>
   );
 };
 

@@ -5,10 +5,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import {data} from '../common/data';
 
 export const ChooseCategoriesScreen = memo(({navigation}: any) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isChecked, setIsChecked] = useState(false);
-  const [canSignUp, setCanSignUp] = useState(true);
   const listCategoryChoosed = [];
 
   const itemCategory = (category: string, isChoose = false) => {
@@ -67,7 +63,8 @@ export const ChooseCategoriesScreen = memo(({navigation}: any) => {
               width: '90%',
               flexDirection: 'row',
               justifyContent: 'space-between',
-              margin: 24,
+              marginHorizontal: 24,
+              marginTop: 55,
             }}>
             <Pressable
               onPress={() => {
