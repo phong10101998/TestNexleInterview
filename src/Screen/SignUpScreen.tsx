@@ -1,34 +1,26 @@
-import CheckBox from '@react-native-community/checkbox';
 import React, {memo, useEffect, useState} from 'react';
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import LinearGradient from 'react-native-linear-gradient';
 import CustomTextInput from '../component/CustomInputText';
 import CustomTextInputPassword from '../component/CustomInputTextPassword';
-import {create} from 'apisauce';
-import axios from 'axios';
+import {useDispatch, useSelector} from 'react-redux';
+import {signUpUser, UserState} from '../store/signup';
+import {setOAuthToken} from '../service/handleToken';
 
 export const SignUpScreen = memo(({navigation}: any) => {
+  const dispatch = useDispatch();
+  const userStore = useSelector((state: {user: UserState}) => state.user);
+
+  const {userItem, status}: any = userStore;
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isChecked, setIsChecked] = useState(false);
   const [canSignUp, setCanSignUp] = useState(false);
 
-  const api = create({
-    baseURL: 'http://streaming.nexlesoft.com:4000/api/auth/signup',
-  });
-
-  const signUp = (email: string, password: string) => {
-    api
-      .post('', {
-        firstName: 'steve',
-        lastName: 'ronaldo',
-        email: email,
-        password: password,
-      })
-      .then(response => {
-        console.log(response);
-      });
+  const checkSignUpUser = (email: string, password: string) => {
+    dispatch(signUpUser({email, password}));
   };
 
   useEffect(() => {
@@ -38,6 +30,13 @@ export const SignUpScreen = memo(({navigation}: any) => {
       setCanSignUp(false);
     }
   }, [email, password]);
+
+  useEffect(() => {
+    if (userItem.token !== undefined) {
+      setOAuthToken(userItem.token);
+      navigation.navigate('chooseCategory');
+    }
+  }, [userItem]);
 
   return (
     <View style={styles.container}>
@@ -49,6 +48,11 @@ export const SignUpScreen = memo(({navigation}: any) => {
       <LinearGradient
         colors={['transparent', 'black', 'black']}
         style={styles.linearGradient}>
+        <Image
+          source={require('../asset/ic_arrow.png')}
+          resizeMode="center"
+          style={styles.imageBack}
+        />
         <KeyboardAwareScrollView
           showsVerticalScrollIndicator={false}
           style={{
@@ -57,11 +61,6 @@ export const SignUpScreen = memo(({navigation}: any) => {
             width: '100%',
             height: '100%',
           }}>
-          <Image
-            source={require('../asset/ic_arrow.png')}
-            resizeMode="center"
-            style={styles.imageBack}
-          />
           <Text style={styles.textStarted}>Let’s get you started!</Text>
 
           <CustomTextInput
@@ -106,7 +105,8 @@ export const SignUpScreen = memo(({navigation}: any) => {
             <Text style={styles.textSignUp}>Sign Up</Text>
             <Pressable
               onPress={() => {
-                signUp(email, password);
+                checkSignUpUser(email, password);
+                // checkData();
                 // navigation.navigate('chooseCategory');
               }}
               disabled={!canSignUp}
@@ -138,13 +138,21 @@ export const SignUpScreen = memo(({navigation}: any) => {
 
 const styles = StyleSheet.create({
   container: {flex: 1, flexDirection: 'row'},
-  imageBack: {width: 10, height: 17, margin: 24},
+  imageBack: {
+    width: 10,
+    height: 17,
+    marginTop: 30,
+    marginLeft: 24,
+    top: 0,
+    left: 0,
+    position: 'absolute',
+  },
   imageBackground: {
     width: '100%',
     height: '70%',
   },
   textStarted: {
-    marginTop: '50%',
+    marginTop: '70%',
     marginStart: 24,
     color: 'white',
     fontSize: 22,

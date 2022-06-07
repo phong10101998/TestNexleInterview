@@ -2,19 +2,46 @@ import React, {memo, useEffect, useState} from 'react';
 import {FlatList, Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import LinearGradient from 'react-native-linear-gradient';
-import {data} from '../common/data';
+import {useDispatch, useSelector} from 'react-redux';
+import {CategoryState, getCategoryList} from '../store/categories';
+import {UserState} from '../store/signup';
 
 export const ChooseCategoriesScreen = memo(({navigation}: any) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isChecked, setIsChecked] = useState(false);
-  const [canSignUp, setCanSignUp] = useState(true);
-  const listCategoryChoosed = [];
+  const dispatch = useDispatch();
+  const categoryStore = useSelector(
+    (state: {categories: CategoryState}) => state.categories,
+  );
+  const {categoryItem}: any = categoryStore;
 
-  const itemCategory = (category: string, isChoose = false) => {
+  const userStore = useSelector((state: {user: UserState}) => state.user);
+
+  const {userItem}: any = userStore;
+
+  const [itemActive, setItemActive] = useState([]);
+
+  const onPressItem = (id: string) => {
+    setItemActive(prev => {
+      if (!prev.includes(id)) {
+        return [...prev, id];
+      } else {
+        return prev.filter((e: string) => {
+          return e !== id;
+        });
+      }
+    });
+  };
+
+  useEffect(() => {
+    dispatch(getCategoryList(userItem.token));
+  }, []);
+
+  const itemCategory = (name: string, id: string) => {
+    const active = itemActive.includes(id);
     return (
       <LinearGradient
-        colors={!isChoose ? ['transparent'] : ['#8A32A9', '#8A00FF']}
+        colors={
+          !active ? ['transparent', 'transparent'] : ['#8A32A9', '#8A00FF']
+        }
         style={{
           width: 108,
           height: 71,
@@ -29,14 +56,10 @@ export const ChooseCategoriesScreen = memo(({navigation}: any) => {
         <Pressable
           style={{flex: 1, justifyContent: 'center'}}
           onPress={() => {
-            isChoose = !isChoose;
-            console.log(isChoose);
-            isChoose
-              ? listCategoryChoosed.push(category)
-              : listCategoryChoosed.splice(listCategoryChoosed.length, 1);
+            onPressItem(id);
           }}>
           <Text style={{alignSelf: 'center', color: 'white', fontSize: 14}}>
-            {category}
+            {name}
           </Text>
         </Pressable>
       </LinearGradient>
@@ -67,7 +90,8 @@ export const ChooseCategoriesScreen = memo(({navigation}: any) => {
               width: '90%',
               flexDirection: 'row',
               justifyContent: 'space-between',
-              margin: 24,
+              marginHorizontal: 24,
+              marginTop: 30,
             }}>
             <Pressable
               onPress={() => {
@@ -81,7 +105,7 @@ export const ChooseCategoriesScreen = memo(({navigation}: any) => {
             </Pressable>
             <Pressable
               onPress={() => {
-                console.log(listCategoryChoosed);
+                console.log(itemActive);
               }}>
               <Text
                 style={{
@@ -103,8 +127,8 @@ export const ChooseCategoriesScreen = memo(({navigation}: any) => {
           <FlatList
             style={{marginHorizontal: 10}}
             numColumns={3}
-            data={data.categories}
-            renderItem={({item}) => itemCategory(`${item.name}`)}
+            data={categoryItem.categories}
+            renderItem={({item}) => itemCategory(item.name, item._id)}
             keyExtractor={item => item._id}
           />
         </KeyboardAwareScrollView>
