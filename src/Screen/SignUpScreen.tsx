@@ -11,17 +11,11 @@ import {setOAuthToken} from '../service/handleToken';
 export const SignUpScreen = memo(({navigation}: any) => {
   const dispatch = useDispatch();
   const userStore = useSelector((state: {user: UserState}) => state.user);
-
   const {userItem, status}: any = userStore;
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isChecked, setIsChecked] = useState(false);
+  // const [isChecked, setIsChecked] = useState(false);
   const [canSignUp, setCanSignUp] = useState(false);
-
-  const checkSignUpUser = (email: string, password: string) => {
-    dispatch(signUpUser({email, password}));
-  };
 
   useEffect(() => {
     if (email.length !== 0 && password.length !== 0) {
@@ -37,6 +31,10 @@ export const SignUpScreen = memo(({navigation}: any) => {
       navigation.navigate('chooseCategory');
     }
   }, [userItem]);
+
+  const checkSignUpUser = (email: string, password: string) => {
+    dispatch(signUpUser({email, password}));
+  };
 
   return (
     <View style={styles.container}>
@@ -55,12 +53,7 @@ export const SignUpScreen = memo(({navigation}: any) => {
         />
         <KeyboardAwareScrollView
           showsVerticalScrollIndicator={false}
-          style={{
-            flex: 1,
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-          }}>
+          style={styles.scrollView}>
           <Text style={styles.textStarted}>Let’s get you started!</Text>
 
           <CustomTextInput
@@ -94,14 +87,7 @@ export const SignUpScreen = memo(({navigation}: any) => {
             and
             <Text style={{color: '#647FFF'}}> Privacy Policy </Text>
           </Text>
-          <View
-            style={{
-              marginTop: 30,
-              marginHorizontal: 24,
-              marginBottom: 60,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-            }}>
+          <View style={styles.viewBottom}>
             <Text style={styles.textSignUp}>Sign Up</Text>
             <Pressable
               onPress={() => {
@@ -111,7 +97,7 @@ export const SignUpScreen = memo(({navigation}: any) => {
               }}
               disabled={!canSignUp}
               style={[
-                styles.nextBtn,
+                styles.nextBtnView,
                 {
                   borderColor: canSignUp
                     ? '#647FFF'
@@ -119,12 +105,7 @@ export const SignUpScreen = memo(({navigation}: any) => {
                 },
               ]}>
               <Image
-                style={{
-                  width: 23,
-                  height: 52,
-                  justifyContent: 'center',
-                  alignSelf: 'center',
-                }}
+                style={styles.buttonNext}
                 resizeMode="contain"
                 source={require('../asset/ic_next.png')}
               />
@@ -183,10 +164,29 @@ const styles = StyleSheet.create({
     fontSize: 16,
     alignSelf: 'center',
   },
-  nextBtn: {
+  nextBtnView: {
     width: 54,
     height: 54,
     borderRadius: 27,
     borderWidth: 1,
+  },
+  buttonNext: {
+    width: 23,
+    height: 52,
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  viewBottom: {
+    marginTop: 30,
+    marginHorizontal: 24,
+    marginBottom: 60,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  scrollView: {
+    flex: 1,
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
   },
 });
