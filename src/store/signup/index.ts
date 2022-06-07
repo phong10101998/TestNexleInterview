@@ -1,6 +1,5 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
-import {postSignUp} from '../../service/signup';
-import getCategories from '../../service/categories/getCategories';
+import {postSignUp} from '../../service/callApi';
 
 export interface UserParams {
   email: string;
@@ -8,30 +7,23 @@ export interface UserParams {
 }
 
 export const signUpUser = createAsyncThunk(
-  '/auth/signup',
-  async ({email, password}: UserParams, {rejectWithValue}) => {
-    try {
-      // const response = await postSignUp(email, password);
-      const response = await getCategories();
-      return response;
-    } catch (error: any) {
-      const {message} = error;
-      rejectWithValue(message);
-    }
+  'signup',
+  async ({email, password}: UserParams) => {
+    return await postSignUp(email, password);
   },
 );
 
 export interface UserState {
-  item: object;
-  signUp: {
+  userItem?: Object;
+  status: {
     loading: boolean;
     error: any;
   };
 }
 
 const initialState = {
-  item: {},
-  signUp: {
+  userItem: {},
+  status: {
     loading: false,
     error: '',
   },
@@ -42,16 +34,19 @@ export const userSlice = createSlice({
   initialState: initialState,
   reducers: {},
   extraReducers: builder => {
-    builder.addCase(signUpUser.fulfilled, (state: UserState, payload) => {
-      state.signUp.loading = false;
-      state.item = payload;
-    });
+    builder.addCase(
+      signUpUser.fulfilled,
+      (state: UserState, {payload}: any) => {
+        state.status.loading = false;
+        state.userItem = payload;
+      },
+    );
     builder.addCase(signUpUser.pending, (state: UserState) => {
-      state.signUp.loading = true;
+      state.status.loading = true;
     });
     builder.addCase(signUpUser.rejected, (state: UserState, payload) => {
-      state.signUp.loading = false;
-      state.item = payload.error;
+      state.status.loading = false;
+      state.status.error = payload.error;
     });
   },
 });

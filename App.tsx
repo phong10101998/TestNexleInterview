@@ -15,16 +15,22 @@ import {ChooseCategoriesScreen} from './src/Screen/ChooseCategoriesScreen';
 import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/lib/integration/react';
 import {store, persistor} from './src/store';
+import {getOAuthToken} from './src/service/handleToken';
 
 const Stack = createNativeStackNavigator();
 
 const App: () => ReactNode = () => {
+  // const getToken = async () => {
+  //   return await getOAuthToken();
+  // };
+  // console.log(getToken()); //{"_U": 0, "_V": 0, "_W": null, "_X": null}
+
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <NavigationContainer>
           <Stack.Navigator
-            initialRouteName="signUp"
+            initialRouteName={'signUp'}
             screenOptions={{
               headerShown: false,
             }}>

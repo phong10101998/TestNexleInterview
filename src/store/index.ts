@@ -1,5 +1,4 @@
 import {AnyAction, CombinedState, combineReducers} from 'redux';
-import storageSession from 'redux-persist/es/storage/session'
 import storage from 'redux-persist/lib/storage';
 
 import {
@@ -14,20 +13,29 @@ import {
 } from 'redux-persist';
 import {configureStore} from '@reduxjs/toolkit';
 
-import signup from './signup';
+import user from './signup';
+import categories from './categories';
 
 export type RootState = ReturnType<typeof reducers>;
 
 const reducers = combineReducers({
-  signup,
+  user,
+  categories,
 });
 
 const rootReducer = (
   state:
     | CombinedState<{
-        signup: {
-          item: object;
-          signUp: {
+        user: {
+          userItem: object;
+          status: {
+            loading: boolean;
+            error: any;
+          };
+        };
+        categories: {
+          categoryItem: object;
+          status: {
             loading: boolean;
             error: any;
           };
@@ -42,7 +50,7 @@ const rootReducer = (
 const persistConfig = {
   key: 'root',
   storage: storage,
-  whitelist: ['signup'],
+  whitelist: [],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -1,4 +1,3 @@
-import CheckBox from '@react-native-community/checkbox';
 import React, {memo, useEffect, useState} from 'react';
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -6,32 +5,22 @@ import LinearGradient from 'react-native-linear-gradient';
 import CustomTextInput from '../component/CustomInputText';
 import CustomTextInputPassword from '../component/CustomInputTextPassword';
 import {useDispatch, useSelector} from 'react-redux';
-import {signUpUser} from '../store/signup';
+import {signUpUser, UserState} from '../store/signup';
+import {setOAuthToken} from '../service/handleToken';
 
 export const SignUpScreen = memo(({navigation}: any) => {
   const dispatch = useDispatch();
+  const userStore = useSelector((state: {user: UserState}) => state.user);
+
+  const {userItem, status}: any = userStore;
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isChecked, setIsChecked] = useState(false);
   const [canSignUp, setCanSignUp] = useState(false);
 
-  const signUp = (email: string, password: string) => {
+  const checkSignUpUser = (email: string, password: string) => {
     dispatch(signUpUser({email, password}));
-  };
-
-  const checkData = () => {
-    fetch('http://streaming.nexlesoft.com:4000/api/auth/signup', {
-      method: 'POST',
-      body: JSON.stringify({
-        firstName: 'Phong',
-        lastName: 'Nguyen',
-        email: email,
-        password: password,
-      }),
-    }).then(res => {
-      console.log(res);
-    });
   };
 
   useEffect(() => {
@@ -41,6 +30,13 @@ export const SignUpScreen = memo(({navigation}: any) => {
       setCanSignUp(false);
     }
   }, [email, password]);
+
+  useEffect(() => {
+    if (userItem.token !== undefined) {
+      setOAuthToken(userItem.token);
+      navigation.navigate('chooseCategory');
+    }
+  }, [userItem]);
 
   return (
     <View style={styles.container}>
@@ -109,8 +105,8 @@ export const SignUpScreen = memo(({navigation}: any) => {
             <Text style={styles.textSignUp}>Sign Up</Text>
             <Pressable
               onPress={() => {
-                // signUp(email, password);
-                checkData();
+                checkSignUpUser(email, password);
+                // checkData();
                 // navigation.navigate('chooseCategory');
               }}
               disabled={!canSignUp}
@@ -145,7 +141,7 @@ const styles = StyleSheet.create({
   imageBack: {
     width: 10,
     height: 17,
-    marginTop: 60,
+    marginTop: 30,
     marginLeft: 24,
     top: 0,
     left: 0,
