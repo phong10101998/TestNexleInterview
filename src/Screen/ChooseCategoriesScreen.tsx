@@ -12,12 +12,13 @@ export const ChooseCategoriesScreen = memo(({navigation}: any) => {
     (state: {categories: CategoryState}) => state.categories,
   );
   const {categoryItem}: any = categoryStore;
-
   const userStore = useSelector((state: {user: UserState}) => state.user);
-
   const {userItem}: any = userStore;
-
   const [itemActive, setItemActive] = useState([]);
+
+  useEffect(() => {
+    dispatch(getCategoryList(userItem.token));
+  }, []);
 
   const onPressItem = (id: string) => {
     setItemActive(prev => {
@@ -31,10 +32,6 @@ export const ChooseCategoriesScreen = memo(({navigation}: any) => {
     });
   };
 
-  useEffect(() => {
-    dispatch(getCategoryList(userItem.token));
-  }, []);
-
   const itemCategory = (name: string, id: string) => {
     const active = itemActive.includes(id);
     return (
@@ -42,25 +39,11 @@ export const ChooseCategoriesScreen = memo(({navigation}: any) => {
         colors={
           !active ? ['transparent', 'transparent'] : ['#8A32A9', '#8A00FF']
         }
-        style={{
-          width: 108,
-          height: 71,
-          flex: 1,
-          flexDirection: 'column',
-          margin: 4,
-          borderRadius: 8,
-          borderWidth: 1,
-          borderColor: 'rgba(255, 255, 255, 0.12)',
-          justifyContent: 'center',
-        }}>
+        style={styles.itemCategory}>
         <Pressable
           style={{flex: 1, justifyContent: 'center'}}
-          onPress={() => {
-            onPressItem(id);
-          }}>
-          <Text style={{alignSelf: 'center', color: 'white', fontSize: 14}}>
-            {name}
-          </Text>
+          onPress={() => onPressItem(id)}>
+          <Text style={styles.textCategory}>{name}</Text>
         </Pressable>
       </LinearGradient>
     );
@@ -68,7 +51,6 @@ export const ChooseCategoriesScreen = memo(({navigation}: any) => {
 
   return (
     <View style={styles.container}>
-      <View></View>
       <Image
         source={require('../asset/bg_category.png')}
         resizeMode="stretch"
@@ -79,20 +61,8 @@ export const ChooseCategoriesScreen = memo(({navigation}: any) => {
         style={styles.linearGradient}>
         <KeyboardAwareScrollView
           showsVerticalScrollIndicator={false}
-          style={{
-            flex: 1,
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-          }}>
-          <View
-            style={{
-              width: '90%',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              marginHorizontal: 24,
-              marginTop: 30,
-            }}>
+          style={styles.scrollView}>
+          <View style={styles.viewHeader}>
             <Pressable
               onPress={() => {
                 navigation.goBack();
@@ -107,14 +77,7 @@ export const ChooseCategoriesScreen = memo(({navigation}: any) => {
               onPress={() => {
                 console.log(itemActive);
               }}>
-              <Text
-                style={{
-                  alignSelf: 'center',
-                  color: 'white',
-                  fontWeight: 'bold',
-                }}>
-                Done
-              </Text>
+              <Text style={styles.done}>Done</Text>
             </Pressable>
           </View>
           <Text style={styles.textWelcome}>
@@ -138,8 +101,14 @@ export const ChooseCategoriesScreen = memo(({navigation}: any) => {
 });
 
 const styles = StyleSheet.create({
-  container: {flex: 1, flexDirection: 'row'},
-  imageBack: {width: 10, height: 17},
+  container: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  imageBack: {
+    width: 10,
+    height: 17,
+  },
   imageBackground: {
     width: '100%',
     height: '70%',
@@ -165,5 +134,39 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     position: 'absolute',
+  },
+  itemCategory: {
+    width: 108,
+    height: 71,
+    flex: 1,
+    flexDirection: 'column',
+    margin: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+    justifyContent: 'center',
+  },
+  textCategory: {
+    alignSelf: 'center',
+    color: 'white',
+    fontSize: 14,
+  },
+  viewHeader: {
+    width: '90%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: 24,
+    marginTop: 30,
+  },
+  scrollView: {
+    flex: 1,
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+  },
+  done: {
+    alignSelf: 'center',
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
